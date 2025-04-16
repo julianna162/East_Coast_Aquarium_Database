@@ -1,0 +1,327 @@
+-- DB C1 Breif SQL Code
+-- By: Leilani, Julianna
+
+-- Tables
+/* 
+
+Delete comment syntax when running code for testing.
+
+DROP TABLE IF EXISTS tank_location;
+DROP TABLE IF EXISTS tank_maintenance;
+DROP TABLE IF EXISTS animal_habitats;
+DROP TABLE IF EXISTS tanks;
+DROP TABLE IF EXISTS animal_illness;
+DROP TABLE IF EXISTS illnesses;
+DROP TABLE IF EXISTS food_orders;
+DROP TABLE IF EXISTS food_inventory;
+DROP TABLE IF EXISTS feeding;
+DROP TABLE IF EXISTS species_source;
+DROP TABLE IF EXISTS species;
+DROP TABLE IF EXISTS species_shipment;
+DROP TABLE IF EXISTS animal_inventory;
+DROP TABLE IF EXISTS animals; 
+
+*/
+
+CREATE TABLE animals(
+   animal_id	VARCHAR(20) NOT NULL,
+   species_numb	INT(20) NOT NULL,
+   animal_size	VARCHAR(10) NOT NULL,
+   tank_numb	INT(20) NOT NULL
+);
+ 
+CREATE TABLE animal_inventory(
+   species_numb INT(20) NOT NULL,
+   tank_numb	INT(20) NOT NULL,
+   animal_size	VARCHAR(10) NOT NULL,
+   numb_animals INT(20) NOT NULL
+);
+
+CREATE TABLE species_shipment(
+   animal_order_id       VARCHAR(20) NOT NULL,
+   species_numb          INT(20) NOT NULL,
+   animal_amount_ordered INT(20) NOT NULL
+);
+
+CREATE TABLE species(
+   species_numb INT(20) NOT NULL,
+   tank_numb 	INT(20) NOT NULL
+);
+
+CREATE TABLE species_source(
+   species_numb INT(20) NOT NULL,
+   supplier_id 	VARCHAR(20) NOT NULL,
+   phone_numb 	VARCHAR(15),
+   email 	VARCHAR(20)	
+);
+
+CREATE TABLE feeding(
+   food_id 	 VARCHAR(20) NOT NULL,
+   species_numb  INT(20) NOT NULL,
+   frequency_fed VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE food_inventory(
+   food_id 	 VARCHAR(20) NOT NULL,
+   reorder_point INT(20) NOT NULL,
+   numb_food 	 INT(20) NOT NULL
+);
+
+CREATE TABLE food_orders(
+   food_order_id       VARCHAR(20) NOT NULL,
+   food_id 	       VARCHAR(20) NOT NULL,
+   food_amount_ordered INT(20) NOT NULL,
+   price 	       VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE animal_illness(
+   animal_id       VARCHAR(20) NOT NULL,
+   illness_code    INT(20) NOT NULL,
+   treatment_given VARCHAR(20),
+   illness_date    DATE NOT NULL,
+   illness_outcome VARCHAR(20)
+);
+
+CREATE TABLE illnesses(
+   illness_code   INT(20) NOT NULL,
+   treatment_code INT(20) NOT NULL
+);
+
+CREATE TABLE tanks(
+   tank_numb    INT(20) NOT NULL,
+   species_numb INT(20) NOT NULL,
+   habitat_numb INT(20) NOT NULL,
+   tank_size    VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE tank_maintenance(
+   maintenance_numb INT(20) NOT NULL,
+   tank_numb        INT(20) NOT NULL,
+   ph_check         VARCHAR(20) NOT NULL,
+   saltinity_check  VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE tank_location(
+   tank_numb         INT(20) NOT NULL,
+   floor_numb        INT(1) NOT NULL,
+   compass_direction VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE animal_habitats(
+   habitat_numb INT(20) NOT NULL,
+   species_numb INT(20) NOT NULL
+);
+
+-- Primary Keys
+ALTER TABLE animals
+   ADD CONSTRAINT anim_pk
+   PRIMARY KEY (animal_id);
+
+ALTER TABLE species_shipment
+   ADD CONSTRAINT specSHIP_pk
+   PRIMARY KEY (animal_order_id);
+
+ALTER TABLE species
+   ADD CONSTRAINT spec_pk
+   PRIMARY KEY (species_numb);
+
+ALTER TABLE feeding
+   ADD CONSTRAINT feed_pk
+   PRIMARY KEY (food_id);
+ 
+ALTER TABLE food_orders
+   ADD CONSTRAINT foodORD_pk
+   PRIMARY KEY (food_order_id);
+
+ALTER TABLE illnesses
+   ADD CONSTRAINT ill_pk
+   PRIMARY KEY (illness_code);
+
+ALTER TABLE tanks
+   ADD CONSTRAINT tank_pk
+   PRIMARY KEY (tank_numb);
+
+ALTER TABLE tank_maintenance
+   ADD CONSTRAINT tankMAIN_pk
+   PRIMARY KEY (maintenance_numb);
+
+ALTER TABLE animal_habitats
+   ADD CONSTRAINT animHAB_pk
+   PRIMARY KEY (habitat_numb);
+
+
+-- fkeys species to animals
+ALTER TABLE animals
+   ADD CONSTRAINT fk1
+   FOREIGN KEY (species_numb)
+   REFERENCES species (species_numb);
+
+-- tanks to animals
+ALTER TABLE animals
+   ADD CONSTRAINT fk2
+   FOREIGN KEY (tank_numb)
+   REFERENCES tanks (tank_numb);
+ 
+-- species to animal_inventory
+ALTER TABLE animal_inventory
+   ADD CONSTRAINT fk3
+   FOREIGN KEY (species_numb)
+   REFERENCES species (species_numb);
+
+-- species to species_shipment
+ALTER TABLE species_shipment
+   ADD CONSTRAINT fk5
+   FOREIGN KEY (species_numb)
+   REFERENCES species (species_numb);
+
+-- tanks to species
+ALTER TABLE species
+   ADD CONSTRAINT fk6
+   FOREIGN KEY (tank_numb)
+   REFERENCES tanks(tank_numb);
+
+-- species to feeding
+ALTER TABLE feeding
+   ADD CONSTRAINT fk7
+   FOREIGN KEY (species_numb)
+   REFERENCES species (species_numb);
+
+-- feeding to food_inventory
+ALTER TABLE food_inventory
+   ADD CONSTRAINT fk8
+   FOREIGN KEY (food_id)
+   REFERENCES feeding (food_id);
+
+-- feeding to food_orders
+ALTER TABLE food_orders
+   ADD CONSTRAINT fk9
+   FOREIGN KEY (food_id)
+   REFERENCES feeding (food_id);
+
+-- animals to animal_illness
+ALTER TABLE animal_illness
+   ADD CONSTRAINT fk10
+   FOREIGN KEY (animal_id)
+   REFERENCES animals (animal_id);
+
+-- illnesses to animal_illness
+ALTER TABLE animal_illness
+   ADD CONSTRAINT fk11
+   FOREIGN KEY (illness_code)
+   REFERENCES illnesses (illness_code);
+
+-- species to tanks
+ALTER TABLE tanks
+   ADD CONSTRAINT fk12
+   FOREIGN KEY (species_numb)
+   REFERENCES species (species_numb);
+
+-- animal_habitats to tanks
+ALTER TABLE tanks
+   ADD CONSTRAINT fk13
+   FOREIGN KEY (habitat_numb)
+   REFERENCES animal_habitats (habitat_numb);
+
+-- tanks to tank_maintenance
+ALTER TABLE tank_maintenance
+   ADD CONSTRAINT fk14
+   FOREIGN KEY (tank_numb)
+   REFERENCES tanks (tank_numb);
+
+-- species to animal_habitats
+ALTER TABLE animal_habitats
+   ADD CONSTRAINT fk15
+   FOREIGN KEY (species_numb)
+   REFERENCES species (species_numb);
+
+-- tanks to tank_location
+ALTER TABLE tank_maintenance
+   ADD CONSTRAINT fk16
+   FOREIGN KEY (tank_numb)
+   REFERENCES tanks (tank_numb);
+
+-- Data
+INSERT INTO animals VALUES ("Albacore", 1111, 'Small', 1);
+INSERT INTO animals VALUES ("Shark", 2222, 'Big', 2);
+INSERT INTO animals VALUES ("Octopus", 3333, 'Big', 2);
+INSERT INTO animals VALUES ("Salmon", 4444, 'Small', 4);
+INSERT INTO animals VALUES ("Haddock", 5555, 'Small', 5);
+ 
+INSERT INTO animal_inventory VALUES (1111, 1, 'Small', 50);
+INSERT INTO animal_inventory VALUES (2222, 2, 'Big', 5);
+INSERT INTO animal_inventory VALUES (3333, 2, 'Big', 10);
+INSERT INTO animal_inventory VALUES (4444, 4, 'Small', 100);
+INSERT INTO animal_inventory VALUES (5555, 5, 'Small', 130);
+
+ 
+INSERT INTO species_shipment VALUES ("Saltwater1",  1111, 20);
+INSERT INTO species_shipment VALUES ("Freshwater1",  2222, 1);
+INSERT INTO species_shipment VALUES ("Saltwater2",  5555, 37);
+INSERT INTO species_shipment VALUES ("Saltwater3",  4444, 42);
+INSERT INTO species_shipment VALUES ("Freshwater2",  3333, 3);
+ 
+INSERT INTO species VALUES (1111, 1);
+INSERT INTO species VALUES (2222, 2);
+INSERT INTO species VALUES (3333, 2);
+INSERT INTO species VALUES (4444, 4);
+INSERT INTO species VALUES (5555, 5);
+
+INSERT INTO species_source VALUES (1111, 'Supplier1', 12345678912, 'supplier1@gmail.com');
+INSERT INTO species_source VALUES (2222, 'Supplier2', 94728671034, 'supplier2@gmail.com');
+INSERT INTO species_source VALUES (3333, 'Supplier3', 95618345729, 'supplier3@gmail.com');
+INSERT INTO species_source VALUES (4444, 'Supplier4', 10473917562, 'supplier4@gmail.com');
+INSERT INTO species_source VALUES (5555, 'Supplier5', 56473910562, 'supplier5@gmail.com');
+ 
+INSERT INTO feeding VALUES ('Seaweed', 1111, 'Once a day');
+INSERT INTO feeding VALUES ('Large meat', 2222, 'Twice a day');
+INSERT INTO feeding VALUES ('Small meat', 3333, 'Twice a day');
+INSERT INTO feeding VALUES ('Plankton', 4444, 'Everyday');
+INSERT INTO feeding VALUES ('Crustations', 5555, 'Everyday');
+
+INSERT INTO food_inventory VALUES ('Seaweed', 100, 200);
+INSERT INTO food_inventory VALUES ('Large meat', 15, 70);
+INSERT INTO food_inventory VALUES ('Small meat', 30, 20);
+INSERT INTO food_inventory VALUES ('Plankton', 60, 100);
+INSERT INTO food_inventory VALUES ('Crustations', 70, 100);
+
+INSERT INTO food_orders VALUES ('Food order one', 'Small meat', 100, '£50.00');
+INSERT INTO food_orders VALUES ('Food order two', 'Large meat', 100, '£13.00');
+INSERT INTO food_orders VALUES ('Food order three', 'Plankton', 100, '£5.00');
+INSERT INTO food_orders VALUES ('Food order four', 'Plankton', 100, '£3.00');
+INSERT INTO food_orders VALUES ('Food order five', 'Crustations', 100, '£10.00');
+
+INSERT INTO animal_illness VALUES ('Albacore', 21, 'Yes', '2024-07-20', 'Healthy');
+INSERT INTO animal_illness VALUES ('Shark', 25, 'Yes', '2024-09-15', 'Sick');
+INSERT INTO animal_illness VALUES ('Shark', 25, 'Yes', '2024-11-13', 'Healthy');
+INSERT INTO animal_illness VALUES ('Octopus', 27, 'No', '2025-02-10', 'Sick');
+INSERT INTO animal_illness VALUES ('Albacore', 23, 'No', '2025-04-02', 'Sick');
+
+INSERT INTO illnesses VALUES (21, 01);
+INSERT INTO illnesses VALUES (23, 02);
+INSERT INTO illnesses VALUES (25, 03);
+INSERT INTO illnesses VALUES (26, 04);
+INSERT INTO illnesses VALUES (27, 05);
+
+INSERT INTO tanks VALUES (1, 1111, 101, 'Small');
+INSERT INTO tanks VALUES (2, 2222, 102, 'Big');
+INSERT INTO tanks VALUES (3, 3333, 103, 'Big');
+INSERT INTO tanks VALUES (4, 4444, 104, 'Small');
+INSERT INTO tanks VALUES (5, 5555, 105, 'Small');
+
+INSERT INTO tank_maintenance VALUES (200, 1, 'Complete', 'Complete');
+INSERT INTO tank_maintenance VALUES (201, 2, 'Complete', 'Complete');
+INSERT INTO tank_maintenance VALUES (202, 3, 'Complete', 'Complete');
+INSERT INTO tank_maintenance VALUES (203, 4, 'Complete', 'Incomplete');
+INSERT INTO tank_maintenance VALUES (204, 5, 'Incomplete', 'Complete');
+
+INSERT INTO animal_habitats VALUES (101, 1111);
+INSERT INTO animal_habitats VALUES (102, 2222);
+INSERT INTO animal_habitats VALUES (103, 3333);
+INSERT INTO animal_habitats VALUES (104, 4444);
+INSERT INTO animal_habitats VALUES (105, 5555);
+
+INSERT INTO tank_location VALUES (1, 1, 'North');
+INSERT INTO tank_location VALUES (2, 2, 'East');
+INSERT INTO tank_location VALUES (3, 2, 'North');
+INSERT INTO tank_location VALUES (4, 3, 'North');
+INSERT INTO tank_location VALUES (5, 1, 'South');
